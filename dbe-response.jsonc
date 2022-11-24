@@ -4,18 +4,18 @@
 {
     "id": "e0300961-85fb-4ef2-abff-681d77f9960e",
     "org": "digdir",
+    "serviceName": "example_dialogue_service",
     "externalReference": "someReference",
     "recipient": "12018212345",
-    "title": [ { "lang": "nb_NO", "value": "En eksempel på en tittel" } ],
-    "createdDateTime": "2022-12-01T10:00:00.000Z",
-    "updatedDateTime": "2022-12-01T10:00:00.000Z",
-    "visibleDateTime": "2022-12-01T12:00:00.000Z",
-    "dueDateTime": "2022-12-01T12:00:00.000Z",
-    "senderName": [ { "lang": "nb_NO", "value": "Overstyrt avsendernavn (bruker default tjenesteeiers navn)" } ],
-
+    "dates": {
+        "createdDateTime": "2022-12-01T10:00:00.000Z",
+        "updatedDateTime": "2022-12-01T10:00:00.000Z",
+        "dueDateTime": "2022-12-01T12:00:00.000Z",    
+    },
     "content": {
-        "lang": "nb_NO",
-        "value": "Innhold med <em>begrenset</em> HTML-støtte. Dette innholdet vises først når elementet ekspanderes. Hvis sikkerhetsnivå er for lavt vil brukeren bli bedt om å reautentisere før dette kan vises."
+        "body": [ { "lang": "nb_NO", "value": "Innhold med <em>begrenset</em> HTML-støtte. Dette innholdet vises først når elementet ekspanderes. Hvis sikkerhetsnivå er for lavt vil brukeren bli bedt om å reautentisere før dette kan vises." } ],
+        "title": [ { "lang": "nb_NO", "value": "En eksempel på en tittel" } ],
+        "senderName": [ { "lang": "nb_NO", "value": "Overstyrt avsendernavn (bruker default tjenesteeiers navn)" } ]            
     },
     "attachments": [
         {
@@ -77,7 +77,9 @@
         ]
     },
     // Dette er ulike innstillinger som kun kan oppgis og er synlig for tjenesteeier
-    "configuration": {
+    "configuration": {        
+        "requireReadNotification": true,
+        "visibleDateTime": "2022-12-01T12:00:00.000Z",
         "onExpandLoadFromUrl": "https://example.com/api/dialogues/123456789/get",
         // Skal dette kunne endres etter opprettelse? Ikke mulig i Altinn2
         "authorization": {
@@ -112,7 +114,7 @@
             ]
         }
     },
-    // Kanskje skilles ut i egen modell?
+    // Kanskje skilles ut i egen modell / endepunkt?
     "notificationLog": {
         "sms": [
             { 

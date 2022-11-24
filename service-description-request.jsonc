@@ -1,0 +1,7 @@
+// Input-modell som beskriver en "instansierbar" tjenste. 
+{
+    "serviceName": "example_dialogue_service",
+    "serviceDescription": { "lang": "nb_NO", "value": "En dialogtjeneste" },
+    "instatiationUrl": "https://example.com/app/dialogues/instantiate",
+    "documentationUrl": "https://docs.example.com/dialogueservice/"
+}
