@@ -1,6 +1,6 @@
 {
     "externalReference": "someReference",
-    "recipient": "12018212345",
+    "recipient": "12018212345", // Organisasjonsnummer eller fødselsnummer (aka "avgiver" eller "aktør") - altså hvem sin dialogboks skal elementet tilhøre
     // Alle tekster som vises verbatim må oppgis som en array av oversatte tekster. Det som benyttes er brukerens valgte språk i Altinn.
     "title": [ { "lang": "nb_NO", "value": "En eksempel på en tittel" } ],
     "visibleDateTime": "2022-12-01T12:00:00.000Z",
@@ -34,23 +34,20 @@
                 "notificationClickUrl": "https://example.com/some/deep/link/to/dialogues/123456789"
             }
         }
-     },
-     // Hvis oppgitt blir denne URL-en forsøkt lastet i når dialog-elementet ekspanderes. Hvis "staticContent" også er oppgitt, vil det bli brukt som fallback om ikke "onExpandLoadFromUrl" lar seg laste innen rimelig tid.
-     // Endepunktet returnerer en modell som minimum inneholder "staticContent", men som også kan inneholde en oppdater liste med "actions" og "attachments".
-     "onExpandLoadFromUrl": "https://example.com/api/dialogues/123456789/get",
-     "staticContent": {
+    },
+    "content": {
         "lang": "nb_NO",
         "value": "Innhold med <em>begrenset</em> HTML-støtte. Dette innholdet vises først når elementet ekspanderes. Hvis sikkerhetsnivå er for lavt vil brukeren bli bedt om å reautentisere før dette kan vises."
-     },
-     "attachments": [
+    },
+    "attachments": [
         {
             "displayName": [ { "lang": "nb_NO", "value": "dette er et vedlegg" } ],
             "sizeInBytes": 123456,
             "contentType": "application/pdf",
             "url": "https://example.com/api/dialogues/123456789/attachments/1"
         }
-     ],
-     "actions": {
+    ],
+    "actions": {
         "gui": [ 
             { 
                 "action": "open", // Denne kan refereres i XACML-policy
@@ -104,38 +101,50 @@
                 "actionUrl": "https://example.com/api/dialogues/123456789" // Merk dette vil kreve at org gjør bakkanal-kall for å slette elementet
             }
         ]
-     },
-     "authorization": {
-        // Referanse til en tjenesteressurs som definerer XACML policy
-        "resource": "example_dialogue_service",
-
-        // Subsidiært kan policy inlines, blir da en spesifikk XACML-policy for dette ene objektet. Dette muliggjør individuell tilgangsstyring, som f.eks. når bare nærmeste leder til en ansatt skal ha
-        // kunne se dialogelementer fra NAV ifm en sykmelding
-        // Basert på en forenklet variant av XACML, se https://github.com/Altinn/altinn-studio/issues/5016. ("Resources" utelates, da det implisitt gjelder kun dette elementet)
-        "xacmlPolicy": [
-            {
-                "Effect": "Permit",
-                "Subjects": [
-                    "person:12345678901"                        
-                ],
-                "Actions": [
-                    "open",
-                    "confirm",
-                    "submit",
-                    "delete"
-                ],
-                "Description": "Nærmeste leder har alle tilganger"
-            },
-            {
-                "Effect": "Permit",
-                "Subjects": [
-                    "person:23456789012"
-                ],
-                "Actions": [
-                    "open"
-                ],
-                "Description": "Den aktuelle ansatte har kun lesetilgang"
-            }
-        ]
+    },
+    // Dette er ulike innstillinger som kun kan oppgis og er synlig for tjenesteeier
+    "configuration": {
+        // Hvis oppgitt blir denne URL-en forsøkt lastet i når dialog-elementet ekspanderes. Hvis "content" også er oppgitt, vil det bli brukt som fallback om ikke "onExpandLoadFromUrl" lar seg laste innen rimelig tid.
+        // Endepunktet returnerer en modell som minimum inneholder "staticContent", men som også kan inneholde en oppdater liste med "actions" og "attachments".
+        "onExpandLoadFromUrl": "https://example.com/api/dialogues/123456789/get",
+        "authorization": {
+            // Referanse til en tjenesteressurs som definerer XACML policy
+            "resource": "example_dialogue_service",
+     
+            // _Subsidiært_ kan policy inlines, blir da en spesifikk XACML-policy for kun dette ene objektet. Dette muliggjør individuell tilgangsstyring på elementnivå, som f.eks. når bare nærmeste leder til en ansatt skal ha
+            // kunne se dialogelementer fra NAV ifm en sykmelding
+            // Basert på en forenklet variant av XACML, se https://github.com/Altinn/altinn-studio/issues/5016. ("Resources" utelates, da det implisitt gjelder kun dette elementet)
+     
+            // I dette eksemplet gis tilgang til to eksplisitt oppgitte personer, samt en tilgangsgruppe. 
+            // "Subjects" kan være organisasjoner, innehavere av roller (eksterne), medlemmer av tilgangsgrupper (ref https://altinn.github.io/docs/utviklingsguider/styring-av-tilgang/for-tjenesteeier/forslag-tilgangsgrupper/)
+             "xacmlPolicy": [
+                 {
+                     "Effect": "Permit",
+                     "Subjects": [
+                         "person:12345678901"
+                     ],
+                     "Actions": [
+                         "open",
+                         "confirm",
+                         "submit",
+                         "delete"
+                     ],
+                     "Description": "Nærmeste leder har alle tilganger",
+                     "IsDelegable": true
+                 },
+                 {
+                     "Effect": "Permit",
+                     "Subjects": [
+                         "person:23456789012",
+                         "accessgroup:taushetsbelagt"
+                     ],
+                     "Actions": [
+                         "open"
+                     ],
+                     "Description": "Den aktuelle ansatte, samt bemyndigede medarbeidere, har kun lesetilgang",
+                     "IsDelegable": false
+                 }
+             ]
+         }
     }
 }

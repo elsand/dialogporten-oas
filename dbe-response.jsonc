@@ -1,0 +1,154 @@
+// Modellene er hovedsaklig like for SBS og tjenesteier, med unntak:
+// - "configuration" vises kun til tjenesteeier
+
+{
+    "id": "e0300961-85fb-4ef2-abff-681d77f9960e",
+    "org": "digdir",
+    "externalReference": "someReference",
+    "recipient": "12018212345",
+    "title": [ { "lang": "nb_NO", "value": "En eksempel på en tittel" } ],
+    "createdDateTime": "2022-12-01T10:00:00.000Z",
+    "updatedDateTime": "2022-12-01T10:00:00.000Z",
+    "visibleDateTime": "2022-12-01T12:00:00.000Z",
+    "dueDateTime": "2022-12-01T12:00:00.000Z",
+    "senderName": [ { "lang": "nb_NO", "value": "Overstyrt avsendernavn (bruker default tjenesteeiers navn)" } ],
+
+    "content": {
+        "lang": "nb_NO",
+        "value": "Innhold med <em>begrenset</em> HTML-støtte. Dette innholdet vises først når elementet ekspanderes. Hvis sikkerhetsnivå er for lavt vil brukeren bli bedt om å reautentisere før dette kan vises."
+    },
+    "attachments": [
+        {
+            "displayName": [ { "lang": "nb_NO", "value": "dette er et vedlegg" } ],
+            "sizeInBytes": 123456,
+            "contentType": "application/pdf",
+            "url": "https://example.com/api/dialogues/123456789/attachments/1"
+        }
+    ],
+    "actions": {
+        "gui": [ 
+            { 
+                "action": "open", // Denne kan refereres i XACML-policy
+                "type": "primary", // Dette bestemmer hvordan handlingen presenteres.
+                "title": [ { "lang": "nb_NO", "value": "Åpne i dialogtjeneste" } ],
+                "url": "https://example.com/some/deep/link/to/dialogues/123456789"
+            },
+            {
+                "action": "confirm",
+                "type": "secondary",
+                "title": [ { "lang": "nb_NO", "value": "Bekreft mottatt" } ],
+                "isBackChannel": true,
+                "url": "https://example.com/some/deep/link/to/dialogues/123456789/confirmReceived"
+            },
+            { 
+                "action": "delete",
+                "type": "tertiary",
+                "title": [ { "lang": "nb_NO", "value": "Avbryt" } ],
+                "isDeleteAction": true,
+                "url": "https://example.com/some/deep/link/to/dialogues/123456789"
+            }
+        ],
+        "api": [ 
+            { 
+                "action": "open",
+                "actionUrl": "https://example.com/api/dialogues/123456789",
+                "method": "GET",
+                "responseSchema": "https://schemas.altinn.no/dbe/v1/dbe.json",
+                "documentationUrl": "https://api-docs.example.com/dialogueservice/open-action"
+            },
+            { 
+                "action": "confirm",
+                "method": "POST",
+                "actionUrl": "https://example.com/api/dialogues/123456789/confirmReceived",
+                "documentationUrl": "https://api-docs.example.com/dialogueservice/confirm-action"
+            },
+            { 
+                "action": "submit", 
+                "actionUrl": "https://example.com/api/dialogues/123456789",
+                "method": "POST",
+                "requestSchema": "https://schemas.example.com/dialogueservice/v1/dialogueservice.json",
+                "responseSchema": "https://schemas.altinn.no/dbe/v1/dbe.json" 
+            },
+            { 
+                "action": "delete",
+                "method": "DELETE",
+                "actionUrl": "https://example.com/api/dialogues/123456789" 
+            }
+        ]
+    },
+    // Dette er ulike innstillinger som kun kan oppgis og er synlig for tjenesteeier
+    "configuration": {
+        "onExpandLoadFromUrl": "https://example.com/api/dialogues/123456789/get",
+        // Skal dette kunne endres etter opprettelse? Ikke mulig i Altinn2
+        "authorization": {
+            "resource": "example_dialogue_service",
+            "xacmlPolicy": [
+                {
+                    "Effect": "Permit",
+                    "Subjects": [
+                        "person:12345678901"
+                    ],
+                    "Actions": [
+                        "open",
+                        "confirm",
+                        "submit",
+                        "delete"
+                    ],
+                    "Description": "Nærmeste leder har alle tilganger",
+                    "IsDelegable": true
+                },
+                {
+                    "Effect": "Permit",
+                    "Subjects": [
+                        "person:23456789012",
+                        "accessgroup:taushetsbelagt"
+                    ],
+                    "Actions": [
+                        "open"
+                    ],
+                    "Description": "Den aktuelle ansatte, samt bemyndigede medarbeidere, har kun lesetilgang",
+                    "IsDelegable": false
+                }
+            ]
+        }
+    },
+    // Kanskje skilles ut i egen modell?
+    "notificationLog": {
+        "sms": [
+            { 
+                "sentDateTime": "2022-12-01T10:00:00.000Z",
+                "status": "ok",
+                "notification": {
+                    "text": "dette kommer på sms",
+                    "from": "Etaten" 
+               }
+            }
+        ],
+        "email": [
+            {
+                "sentDateTime": "2022-12-01T10:00:00.000Z",
+                "status": "ok",
+                "notification": {
+                    "subject": "emnefeltet på e-post" ,
+                    "template": "some-email-template",
+                    "tokens": [
+                        { "name": "header", "value": "dette er en header" },
+                        { "name": "body", "value": "dette er en annen del av template ned men placeholder for {{recipient.fullname}} " } 
+                    ]
+                }
+            }
+        ],
+        "push": [
+            {
+                "sentDateTime": "2022-12-01T10:00:00.000Z",
+                "status": "ok",
+                "notification": {            
+                    "title": "Notification title",
+                    "body": "Simple piece of body text.\nSecond line of body text :)",
+                    "icon": "https://example.com/some-icon-atleast-192x192.png",
+                    "notificationClickUrl": "https://example.com/some/deep/link/to/dialogues/123456789"
+                }
+            }    
+        ]
+    }    
+}
