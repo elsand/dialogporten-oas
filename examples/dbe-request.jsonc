@@ -1,6 +1,5 @@
 // Input modell som tjenesteeiere oppgir for å opprette et element.
-// Modellen kan også oppdateres/muteres med PATCH-kall som inneholder de feltene som en ønsker å endre.
-
+// Modellen kan også oppdateres/muteres med PATCH-kall som inneholder de feltene som en ønsker å endre. Ikke-komplekse felter som ligger på rotnivå kan ikke endres.
 {
     "serviceName": "example_dialogue_service", // Vilkårlig navn som indikerer hvilken type dialog dette er. Vises ikke i GUI, men brukes
                                                // i bl.a. de events som genereres når elementet opprettes/endres og gir Altinn/SBS en mekanisme
