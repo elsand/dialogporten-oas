@@ -1,16 +1,18 @@
 // Modellene er hovedsaklig like for SBS og tjenesteier, med unntak:
 // - "configuration" vises kun til tjenesteeier
+
+
+// GET /dialogporten/api/v1/dbe/e0300961-85fb-4ef2-abff-681d77f9960e
 {
     "id": "e0300961-85fb-4ef2-abff-681d77f9960e",
-    "selfUrl": "https://api.altinn.no/dbes/v1/e0300961-85fb-4ef2-abff-681d77f9960e",
-    "org": "digdir",
-    "serviceName": "example_dialogue_service",
-    "externalReference": "someReference",
-    "recipient": "12018212345",
+    "serviceResourceIdentifier": "example_dialogue_service", // Her kan det være en lenke 
+    "externalReference": "123456789",
+    "recipient": "org:991825827",
+    "status": "under-progress", // Kjente statuser som bestemmer hvordan elementet vises for bruker: "under-progress", "waiting", "deleted", "completed"
     "dates": {
         "createdDateTime": "2022-12-01T10:00:00.000Z",
         "updatedDateTime": "2022-12-01T10:00:00.000Z",
-        "dueDateTime": "2022-12-01T12:00:00.000Z",    
+        "dueDateTime": "2022-12-01T12:00:00.000Z"
     },
     "content": {
         "body": [ { "lang": "nb_NO", "value": "Innhold med <em>begrenset</em> HTML-støtte. Dette innholdet vises først når elementet ekspanderes. Hvis sikkerhetsnivå er for lavt vil brukeren bli bedt om å reautentisere før dette kan vises." } ],
@@ -83,7 +85,6 @@
         "onExpandLoadFromUrl": "https://example.com/api/dialogues/123456789/get",
         // Skal dette kunne endres etter opprettelse? Ikke mulig i Altinn2
         "authorization": {
-            "resource": "example_dialogue_service",
             "xacmlPolicy": [
                 {
                     "Effect": "Permit",
@@ -119,7 +120,7 @@
         "sms": [
             { 
                 "sentDateTime": "2022-12-01T10:00:00.000Z",
-                "status": "ok",
+                "status": "pending",
                 "notification": {
                     "text": "dette kommer på sms",
                     "from": "Etaten" 
@@ -152,5 +153,31 @@
                 }
             }    
         ]
-    }    
+    },
+    // Skilles ut i egen modell / endepunkt
+    // Dette er en logg vedlikeholdt av tjenesteeier som indikerer hva som logisk har skjedd gjennom den aktuelle dialogen. Dette tilgjengeliggjøres sluttbruker gjennom GUI og API, og vil 
+    // slås sammen med aktivitet foretatt i dialogporten, som kan være:
+    // - videredelegering av instansen
+    // - elementet åpnes for første gang
+    // - sletting
+    // 
+    // Loggen er immuterbar - det kan bare legges til innslag
+    "activityLog": [
+        { 
+            "activityDateTime": "2022-12-01T10:00:00.000Z",
+            "performedBy": "person:12018212345",
+            "activityDescription": [ { "lang": "nb_NO", "value": "Dokumentet 'X' ble signert og er klar for innsending" } ],
+            "activityDetailsUrl": "https://example.com/some/deep/link/to/dialogues/123456789/activitylog/1"
+        }
+    ],
+    // HAL til relaterte ressurser
+    "_links": {
+        "self": { "href": "/dialogporten/api/v1/dbe/e0300961-85fb-4ef2-abff-681d77f9960e" },        
+        "notificationlog": { "href": "/dialogporten/api/v1/dbe/e0300961-85fb-4ef2-abff-681d77f9960e/notificationlog" }, // eget endepunkt for varslingslogg for elementet
+        "activitylog": { "href": "/dialogporten/api/v1/dbe/e0300961-85fb-4ef2-abff-681d77f9960e/activitylog" }, // eget endepunkt for aktivitetslogg for elementet        
+        "serviceresource": { "href": "/resourceregistry/api/v1/resource/example_dialogue_service/" }, // Dyplenke til portalvisning for elementet i Dialogporten
+
+        "selfgui": { "href": "https://www.altinn.no/dialogporten/?expandElement=e0300961-85fb-4ef2-abff-681d77f9960e" }, // Dyplenke til portalvisning for elementet i Dialogporten
+        "externalgui": { "href": "https://example.com/some/deep/link/to/dialogues/123456789" } // Dyplenke til portalvisning for elementet hos tjenesteeier
+    }
 }

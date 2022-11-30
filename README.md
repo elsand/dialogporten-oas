@@ -11,11 +11,11 @@
 ## API for tjenesteeiere i Altinn
 - create-dbe
 - get-dbes
-- update-dbe
-- create-service-description
-- get-service-descriptions
-- update-service-descriptions
-- delete-service-descriptions
+- patch-dbe
+- create-service-resource
+- get-service-resource
+- update-service-resource
+- delete-service-resource
   
 ## API for SBS i Altinn
 - get-dbe
