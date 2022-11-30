@@ -1,5 +1,5 @@
 // Input modell som tjenesteeiere oppgir for å opprette et element.
-// Modellen kan også oppdateres/muteres med PATCH-kall som inneholder de feltene som en ønsker å endre. Ikke-komplekse felter som ligger på rotnivå kan ikke endres.
+// Modellen kan også oppdateres/muteres med PATCH-kall som inneholder de feltene som en ønsker å endre. Ikke-komplekse felter som ligger på rotnivå kan ikke endres (med unntak av "status").
 
 // POST /dialogporten/api/v1/dbe
 {
@@ -10,9 +10,11 @@
                                   // Brukernavn benyttes for selv-registrerte bruker, og er typisk en e-postadresse
     // Alle tekster som vises verbatim må oppgis som en array av oversatte tekster. Det som benyttes er brukerens valgte språk i Altinn.
     "externalReference": "123456789",
+    "status": "under-progress", // Kjente statuser som bestemmer hvordan elementet vises for bruker: "none", "under-progress", "waiting", "deleted", "completed". Hvis ikke oppgitt, velges "none"
     "dates": {
         // Hvis oppgitt blir elementet satt med en frist (i Altinn2 er denne bare retningsgivende og har ingen effekt, skal dette fortsette?)
-        "dueDateTime": "2022-12-01T12:00:00.000Z"
+        "dueDateTime": "2022-12-01T12:00:00.000Z",
+        "expiryDate": "2023-12-01T12:00:00.000Z" // Mulighet for å skjule/deaktivere et element på et eller annet tidspunkt?
     },
     "content": {
         "body": [ { "lang": "nb_NO", "value": "Innhold med <em>begrenset</em> HTML-støtte. Dette innholdet vises først når elementet ekspanderes. Hvis sikkerhetsnivå er for lavt vil brukeren bli bedt om å reautentisere før dette kan vises." } ],
@@ -114,7 +116,7 @@
     },
     "activityLog": [
         {
-
+            // Typisk tom ved opprettelse, men kan populeres av tjenesteeier etter eget forgodtbefinnende
         }
     ],
     // Dette er ulike innstillinger som kun kan oppgis og er synlig for tjenesteeier

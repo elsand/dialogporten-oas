@@ -8,10 +8,17 @@
     "serviceResourceIdentifier": "example_dialogue_service", // Her kan det være en lenke 
     "externalReference": "123456789",
     "recipient": "org:991825827",
-    "status": "under-progress", // Kjente statuser som bestemmer hvordan elementet vises for bruker: "under-progress", "waiting", "deleted", "completed"
+    "status": "under-progress", // Kjente statuser som bestemmer hvordan elementet vises for bruker: 
+                                // "unspecified" = Elementet har ingen spesiell status. Brukes typisk for enkle meldinger som ikke krever noe interaksjon. Dette er default. 
+                                // "under-progress" = Under arbeid. Generell status som brukes for dialogtjenester der ytterligere bruker-input er forventet.
+                                // "waiting" = Venter på tilbakemelding fra tjenesteeier
+                                // "signing" = Dialogen er i en tilstand hvor den venter på signering. Typisk siste steg etter at all utfylling er gjennomført og validert, 
+                                // "cancelled" = Dialogen ble avbrutt. Dette gjør at elementet typisk fjernes fra normale GUI-visninger.
+                                // "completed" = Dialigen ble fullført. Dette gjør at elementet typisk flyttes til et GUI-arkiv eller lignende.
     "dates": {
         "createdDateTime": "2022-12-01T10:00:00.000Z",
         "updatedDateTime": "2022-12-01T10:00:00.000Z",
+        "readDateTime": "2022-12-01T10:00:00.000Z", // sist meldingen ble "lest", altså ekspandert i UI eller hentet via detailsUrl i API. Hvis ikke oppgitt, eller readDateTime < updatedDateTime vises typisk elementet som ulest/oppdatert i GUI.
         "dueDateTime": "2022-12-01T12:00:00.000Z"
     },
     "content": {
@@ -83,8 +90,10 @@
         "requireReadNotification": true,
         "visibleDateTime": "2022-12-01T12:00:00.000Z",
         "onExpandLoadFromUrl": "https://example.com/api/dialogues/123456789/get",
-        // Skal dette kunne endres etter opprettelse? Ikke mulig i Altinn2
         "authorization": {
+            "requirePermitFrom": "Both",  // "Both" = både inline policy og policy refert til av serviceResource må gi "Permit" for at en gitt action skal godkjennes for det aktuelle subjectet (AND-ing)
+                                          // "Either" = enten inline policy eller policy refert til av serviceResource (eller begge) må gi "Permit" for at en gitt action skal godkjennes for det aktuelle subjectet (OR-ing). Dette er default.
+                                          // "InlineOnly" = kun "Permit" fra inline policy gjør at en gitt action godkjennes for det aktuelle subjectet.
             "xacmlPolicy": [
                 {
                     "Effect": "Permit",
@@ -116,6 +125,7 @@
         }
     },
     // Skilles ut i egen modell / endepunkt
+    // Slå sammen med activitylog? 
     "notificationLog": {
         "sms": [
             { 
@@ -161,11 +171,11 @@
     // - elementet åpnes for første gang
     // - sletting
     // 
-    // Loggen er immuterbar - det kan bare legges til innslag
+    // Loggen er immuterbar - det kan bare legges til innslag gjennom PATCH-kall
     "activityLog": [
         { 
             "activityDateTime": "2022-12-01T10:00:00.000Z",
-            "activityType": "change", // Her kan det være ulike typer som medfører ulik visning i GUI. F.eks. kan "aktivitet" være at det sendes en melding fra tjenesteeieren, f.eks. som en foreløpig tilbakemelding.
+            "activityType": "change", // Her kan det være ulike typer som medfører ulik visning i GUI. F.eks. kan "feedback" være at det sendes en melding fra tjenesteeieren, f.eks. som en foreløpig tilbakemelding.
                                       // URL kan da lenke til den konkrete meldingen
             "performedBy": "person:12018212345",
             "activityDescription": [ { "lang": "nb_NO", "value": "Dokumentet 'X' ble signert og er klar for innsending" } ],
@@ -174,7 +184,7 @@
         { 
             "activityDateTime": "2022-12-01T10:00:00.000Z",
             "activityType": "feedback",
-            // Fravær av performedBy indikerer at det er tjenesteeieren
+            // Fravær av performedBy indikerer at det er tjenesteeieren som er utførende
             "activityDescription": [ { "lang": "nb_NO", "value": "Foreløpig svar på saksbehandling" } ],
             "activityDetailsUrl": "https://example.com/some/deep/link/to/dialogues/123456789/message/2"
         }
