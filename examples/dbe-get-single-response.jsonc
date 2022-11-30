@@ -165,9 +165,18 @@
     "activityLog": [
         { 
             "activityDateTime": "2022-12-01T10:00:00.000Z",
+            "activityType": "change", // Her kan det være ulike typer som medfører ulik visning i GUI. F.eks. kan "aktivitet" være at det sendes en melding fra tjenesteeieren, f.eks. som en foreløpig tilbakemelding.
+                                      // URL kan da lenke til den konkrete meldingen
             "performedBy": "person:12018212345",
             "activityDescription": [ { "lang": "nb_NO", "value": "Dokumentet 'X' ble signert og er klar for innsending" } ],
             "activityDetailsUrl": "https://example.com/some/deep/link/to/dialogues/123456789/activitylog/1"
+        },
+        { 
+            "activityDateTime": "2022-12-01T10:00:00.000Z",
+            "activityType": "feedback",
+            // Fravær av performedBy indikerer at det er tjenesteeieren
+            "activityDescription": [ { "lang": "nb_NO", "value": "Foreløpig svar på saksbehandling" } ],
+            "activityDetailsUrl": "https://example.com/some/deep/link/to/dialogues/123456789/message/2"
         }
     ],
     // HAL til relaterte ressurser
