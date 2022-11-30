@@ -56,5 +56,14 @@
                 "actionUrl": "https://example.com/api/dialogues/123456789"
             }
         ]
-    }
+    },
+    "activityLog": [
+        { 
+            "activityDateTime": "2022-12-01T10:00:00.000Z",
+            "activityType": "change",
+            "performedBy": "person:12018212345",
+            "activityDescription": [ { "lang": "nb_NO", "value": "Dokumentet 'X' ble signert og er klar for innsending" } ],
+            "activityDetailsUrl": "https://example.com/some/deep/link/to/dialogues/123456789/activitylog/1"
+        }
+    ]
 }
